@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (timeRemaining > 0) {
             console.log(`Access granted. Reloading page in ${timeRemaining} seconds.`);
             
-            // Set a timer to reload the page right after the access expires
+            // set a timer to reload the page right after the access expires
             setTimeout(function() {
                 // This reload forces PHP to re-run the restriction check
                 window.location.reload();
