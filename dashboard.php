@@ -258,22 +258,24 @@ $expiringCount = count($expiringItems);
     <?php include 'sidebar.php'; ?>
 
     <main class="transition-all duration-300 lg:ml-[256px] p-6 lg:p-10">
-        <header class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 header-bg">
-            <div>
-                <h1 class="text-3xl font-extrabold text-slate-900">Dashboard</h1>
-                <p class="mt-1 text-sm text-slate-500">Welcome back, <span class="font-medium text-slate-700"><?= htmlspecialchars($_SESSION['username']) ?></span></p>
-            </div>
+      <header class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 header-bg">
+    <div>
+        <h1 class="text-3xl font-extrabold text-slate-900">Dashboard</h1>
+        <p class="mt-1 text-sm text-slate-500">
+            Welcome back, 
+            <span class="font-medium text-slate-700">
+                <?= htmlspecialchars($_SESSION['username']) ?>
+            </span>
+        </p>
+    </div>
 
-           
-    
-                </div>
-
-                <a href="sales_report.php" class="inline-flex items-center gap-2 px-4 py-2 bg-brand-500 text-white text-sm font-medium rounded-lg shadow-card hover:shadow-card-strong transition">
-                    Reports
-                </a>
-             
-            </div>
-        </header>
+    <div class="flex items-center gap-3">
+        <a href="sales_report.php"
+           class="inline-flex items-center gap-2 px-4 py-2 bg-brand-500 text-white text-sm font-medium rounded-lg shadow-card hover:shadow-card-strong transition">
+            Reports
+        </a>
+    </div>
+</header>
 
        <section class="mb-6">
     <div class="stats-card inline-block">
@@ -317,6 +319,7 @@ $expiringCount = count($expiringItems);
                                     <span class="text-sm text-slate-800"><?= htmlspecialchars($item['name']) ?></span>
                                     <span class="text-xs font-medium text-rose-600">
                                         <?= $item['quantity'] ?> left (min: <?= $item['low_stock_threshold'] ?>)
+                                         </span>
                                 </div>
                             <?php endforeach; ?>
                         </div>
@@ -352,7 +355,7 @@ $expiringCount = count($expiringItems);
         </div>
     </div>
 </section>
-
+<h2 class="text-lg font-semibold text-slate-800 mb-4">Overview</h2>
 <!-- Then your existing stats grid section starts here -->
 <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
     <div class="bg-white rounded-2xl p-5 shadow-card border border-slate-100">

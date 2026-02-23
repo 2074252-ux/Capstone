@@ -7,7 +7,20 @@
       </div>
 
       <div class="p-6 space-y-4 flex-1">
-        <!-- Update barcode section text colors -->
+        <!-- Product Search -->
+        <div>
+          <label class="block text-sm font-medium text-slate-900 mb-1">Search Product</label>
+          <div class="relative">
+            <input type="text" id="productSearchOut" 
+                   class="w-full p-3 border border-slate-300 rounded-md focus:ring-2 focus:ring-rose-500 text-slate-900"
+                   placeholder="Type product name...">
+            <div id="searchResultsOut" class="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-md shadow-lg hidden max-h-60 overflow-y-auto z-10 text-slate-900">
+              <!-- Search results will be populated here -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Scan by Barcode -->
         <div>
           <label class="block text-sm font-medium text-slate-900 mb-1">Scan Barcode</label>
           <div class="flex gap-2">
@@ -114,54 +127,60 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitBtn = document.getElementById('stockOutSubmit');
     const reasonSelect = document.getElementById('stockOutReason');
     const damageFields = document.getElementById('damageFields');
+    const productSearch = document.getElementById('productSearchOut');
+    const searchResults = document.getElementById('searchResultsOut');
 
-    async function lookupBarcode(code) {
-        if (!code) return;
-        
-        try {
-            const res = await fetch(`stock_out.php?action=lookup&barcode=${encodeURIComponent(code)}`);
-            const data = await res.json();
-            
-            if (data.found && data.items && data.items.length > 0) {
-                if (data.items.length > 1) {
-                    // Multiple items found - show selector
-                    itemSelect.classList.remove('hidden');
-                    itemDetails.classList.add('hidden');
-                    submitBtn.disabled = true;
-                    
-                    const container = itemSelect.querySelector('.bg-slate-50');
-                    container.innerHTML = '';
-                    
-                    data.items.forEach(item => {
-                        const div = document.createElement('div');
-                        div.className = 'p-3 bg-white rounded border border-slate-200 cursor-pointer hover:bg-slate-50';
-                        div.innerHTML = `
-                            <div class="font-medium">${item.name}</div>
-                            <div class="text-sm text-slate-500">
-                                ${item.source === 'custom' ? 'Custom Item' : `Current Qty: ${item.quantity}`}
-                                ${item.expiration_date ? ` · Expires: ${item.expiration_date}` : ''}
-                            </div>
-                        `;
-                        
-                        div.onclick = () => selectItem(item);
-                        container.appendChild(div);
-                    });
-                } else {
-                    // Single item - select it directly
-                    selectItem(data.items[0]);
-                }
+    // Product name search (type-ahead)
+    let searchTimeout;
+    productSearch.addEventListener('input', (e) => {
+      clearTimeout(searchTimeout);
+      const query = e.target.value.trim();
+      if (query.length < 2) {
+        searchResults.classList.add('hidden');
+        return;
+      }
+
+      searchTimeout = setTimeout(() => {
+        fetch(`search_products.php?q=${encodeURIComponent(query)}`)
+          .then(res => res.json())
+          .then(data => {
+            searchResults.innerHTML = '';
+
+            if (data.length > 0) {
+              data.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'p-2 hover:bg-slate-50 cursor-pointer border-b last:border-b-0';
+                div.innerHTML = `
+                  <div class="font-medium">${item.name}</div>
+                  <div class="text-sm text-slate-500">Barcode: ${item.barcode} · Stock: ${item.quantity}</div>
+                `;
+                div.onclick = () => {
+                  barcodeInput.value = item.barcode;
+                  productSearch.value = item.name;
+                  searchResults.classList.add('hidden');
+                  // Trigger barcode lookup
+                  lookupBarcode(item.barcode);
+                };
+                searchResults.appendChild(div);
+              });
+              searchResults.classList.remove('hidden');
             } else {
-                // No items found
-                itemSelect.classList.add('hidden');
-                itemDetails.classList.add('hidden');
-                submitBtn.disabled = true;
-                alert('No items found with this barcode');
+              searchResults.classList.add('hidden');
             }
-        } catch (e) {
-            console.error('Error:', e);
-            alert('Error looking up barcode');
-        }
-    }
+          })
+          .catch(err => {
+            console.error('Search error', err);
+            searchResults.classList.add('hidden');
+          });
+      }, 300);
+    });
+
+    // Hide search results when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!productSearch.contains(e.target) && !searchResults.contains(e.target)) {
+        searchResults.classList.add('hidden');
+      }
+    });
 
     function selectItem(item) {
         itemSelect.classList.add('hidden');
