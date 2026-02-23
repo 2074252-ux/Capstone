@@ -286,7 +286,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['checkout'])) {
 
 
 
-    <!-- hidden field to catch scanner input if focus lost (optional visual only) -->
+  
     <input type="text" id="global-scanner-capture" class="sr-only" autocomplete="off" />
 
     <script src="scripts/purchase.js"></script>
