@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 02, 2025 at 04:59 PM
+-- Generation Time: Feb 23, 2026 at 01:18 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -145,7 +145,8 @@ INSERT INTO `damage_items` (`damage_id`, `item_id`, `barcode`, `name`, `category
 (13, 13, '4800047820502', 'Green Cross', 22, 35.00, 27, 7, 'damage 7', 20, '2025-11-01 00:30:43', NULL),
 (14, 34, '987654321', 'number2test', 9, 2.00, 21, 3, 'eee', 18, '2025-11-02 23:16:14', 1),
 (15, 34, '987654321', 'number2test', 9, 2.00, 18, 2, 'easd', 16, '2025-11-02 23:21:14', 1),
-(16, 34, '987654321', 'number2test', 9, 2.00, 19, 5, '5 dasdw', 14, '2025-11-02 23:27:12', 2);
+(16, 34, '987654321', 'number2test', 9, 2.00, 19, 5, '5 dasdw', 14, '2025-11-02 23:27:12', 2),
+(17, 1, '4806502163917', 'Sanicare Wipes', 25, 30.00, 7, 1, 'sdasdw', 6, '2026-02-21 02:40:56', 1);
 
 -- --------------------------------------------------------
 
@@ -207,7 +208,7 @@ CREATE TABLE `items` (
 --
 
 INSERT INTO `items` (`id`, `barcode`, `name`, `description`, `category_id`, `quantity`, `wholesale_price`, `retail_price`, `expiration_date`, `date_added`, `markup_percentage`, `low_stock_threshold`) VALUES
-(1, '4806502163917', 'Sanicare Wipes', 'Sanicare wipes', 25, 7, 25.00, 30.00, '2026-02-02', '2025-10-26 05:21:03', 15.00, 5),
+(1, '4806502163917', 'Sanicare Wipes', 'Sanicare wipes', 25, 6, 25.00, 30.00, '2026-02-02', '2025-10-26 05:21:03', 15.00, 5),
 (2, '4804888900089', 'ZESTO BIG Mango', 'ZESTO BIG Mango drink', 4, 11, 30.00, 37.50, '2026-03-03', '2025-10-26 05:21:03', 25.00, 5),
 (3, '750515018402', 'SkyFlakes Crackers', 'SkyFlakes crackers', 6, 15, 10.00, 11.50, '2026-06-01', '2025-10-26 05:21:03', 15.00, 5),
 (4, '4800024558305', 'Del Monte Four Season 230ml', 'Del Monte Four Seasons juice drink 230ml', 4, 53, 30.00, 35.00, '2025-12-04', '2025-10-26 05:21:03', 10.00, 5),
@@ -216,7 +217,7 @@ INSERT INTO `items` (`id`, `barcode`, `name`, `description`, `category_id`, `qua
 (8, 'CB1882854490', 'White Sugar', '', 12, 30, 3.00, 5.00, '2026-09-02', '2025-10-26 05:21:03', 10.00, 5),
 (10, '4800016652035', 'Mr Chips', 'Mr chips 24 g', 6, 15, 30.00, 37.50, '2026-02-03', '2025-10-26 05:21:03', 25.00, 5),
 (11, '48037433', 'Star margarine', 'star', 12, 8, 0.00, 50.00, '2026-12-06', '2025-10-26 05:21:03', 10.00, 5),
-(12, '4800361410816', 'BEAR BRAND SWAK 33G', 'Brear Brand swak', 28, 2, 30.00, 35.00, '2026-03-03', '2025-10-26 05:21:03', 10.00, 5),
+(12, '4800361410816', 'BEAR BRAND SWAK 33G', 'Brear Brand swak', 28, 3, 30.00, 33.00, '2026-02-25', '2025-10-26 05:21:03', 10.00, 5),
 (13, '4800047820502', 'Green Cross', 'green', 22, 19, 30.00, 35.00, '2027-02-02', '2025-10-26 05:21:03', 10.00, 5),
 (14, '4801981110001', 'Cocola large', 'coke', 1, 40, 30.00, 35.00, '2026-02-02', '2025-10-26 05:21:03', 10.00, 5),
 (17, '8992696526662', 'nescafe black', 'wea', 5, 27, 30.00, 35.00, '2026-06-02', '2025-10-26 05:21:03', 10.00, 5),
@@ -226,7 +227,7 @@ INSERT INTO `items` (`id`, `barcode`, `name`, `description`, `category_id`, `qua
 (27, '4894819890169', 'Watson', 'esadw', 16, 6, 30.00, 33.00, NULL, '2025-10-27 03:48:15', 10.00, 5),
 (31, '4804888900096', 'zesto pineapple', '250ml', 4, 10, 12.00, 13.80, '2025-11-03', '2025-10-28 09:36:08', 15.00, 5),
 (33, '12345678', 'testinglowstock', 'test', 13, 47, 3.00, 3.30, '2026-02-02', '2025-10-31 17:48:20', 10.00, 25),
-(34, '987654321', 'number2test', '3', 9, 17, 2.00, 2.20, '2026-02-02', '2025-10-31 17:58:45', 10.00, 20);
+(34, '987654321', 'number2test', '3', 9, 21, 2.00, 2.20, '2026-02-02', '2025-10-31 17:58:45', 10.00, 20);
 
 --
 -- Triggers `items`
@@ -393,7 +394,9 @@ INSERT INTO `stock_transactions` (`id`, `item_id`, `type`, `quantity`, `date`, `
 (72, 34, 'in', 2, '2025-11-02 14:55:20', NULL),
 (73, 34, 'in', 2, '2025-11-02 15:15:13', 1),
 (74, 34, 'in', 3, '2025-11-02 15:21:45', 2),
-(75, 34, 'in', 5, '2025-11-02 15:39:55', 2);
+(75, 34, 'in', 5, '2025-11-02 15:39:55', 2),
+(76, 34, 'in', 4, '2025-11-02 18:34:45', 2),
+(77, 12, 'in', 1, '2026-02-20 18:32:49', 1);
 
 -- --------------------------------------------------------
 
@@ -501,7 +504,7 @@ ALTER TABLE `custom_barcodes`
 -- AUTO_INCREMENT for table `damage_items`
 --
 ALTER TABLE `damage_items`
-  MODIFY `damage_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `damage_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `expired_items`
@@ -525,7 +528,7 @@ ALTER TABLE `sales`
 -- AUTO_INCREMENT for table `stock_transactions`
 --
 ALTER TABLE `stock_transactions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=76;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=78;
 
 --
 -- AUTO_INCREMENT for table `users`
