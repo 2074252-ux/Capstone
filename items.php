@@ -308,6 +308,59 @@ unset($_SESSION['status_type']);
       </div>
     </div>
 
+        <!-- View Item Modal -->
+        <div id="viewItemModal" class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl">
+                <div class="flex justify-between items-center p-6 border-b border-gray-200">
+                    <h5 class="text-lg font-semibold text-slate-800">Item Details</h5>
+                    <button type="button" id="closeViewItem" class="text-gray-400 hover:text-gray-600">&times;</button>
+                </div>
+                <div class="p-6 space-y-4">
+                    <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-slate-800">
+                        <div>
+                            <dt class="text-sm text-slate-500">Barcode</dt>
+                            <dd id="vi_barcode" class="font-medium"></dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm text-slate-500">Name</dt>
+                            <dd id="vi_name" class="font-medium"></dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm text-slate-500">Category</dt>
+                            <dd id="vi_category"></dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm text-slate-500">Quantity</dt>
+                            <dd id="vi_quantity"></dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm text-slate-500">Supplier Price</dt>
+                            <dd id="vi_wholesale"></dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm text-slate-500">Selling Price</dt>
+                            <dd id="vi_retail"></dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm text-slate-500">Expiration</dt>
+                            <dd id="vi_expiration"></dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm text-slate-500">Date Added</dt>
+                            <dd id="vi_date_added"></dd>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <dt class="text-sm text-slate-500">Last Stock In</dt>
+                            <dd id="vi_last_stock_in"></dd>
+                        </div>
+                    </dl>
+                </div>
+                <div class="flex justify-end p-6 border-t border-gray-200">
+                    <button id="closeViewItem2" class="px-4 py-2 bg-slate-100 rounded-md">Close</button>
+                </div>
+            </div>
+        </div>
+
 
     <!-- load the moved scripts -->
     <script src="scripts/items.js"></script>
@@ -326,13 +379,97 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.classList.add('active', 'bg-amber-500', 'text-white');
             btn.classList.remove('bg-slate-100', 'text-slate-700');
             
-            // Fetch and display appropriate table
+        
             fetch(`get_items_table.php?type=${btn.dataset.table}`)
                 .then(res => res.text())
                 .then(html => {
-                    itemsTable.innerHTML = html;
+                  
+                    try {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+
+                      
+                        let newTbody = doc.querySelector('tbody');
+                        let rowsHtml = '';
+
+                        if (newTbody) {
+                            rowsHtml = newTbody.innerHTML;
+                        } else {
+                          
+                            const tbMatch = html.match(/<tbody[^>]*>([\s\S]*)<\/tbody>/i);
+                            if (tbMatch) rowsHtml = tbMatch[1];
+                            else rowsHtml = html; 
+                        }
+
+                        const targetTbody = document.querySelector('#itemsTable tbody') || document.getElementById('itemsTbody');
+                        if (targetTbody) {
+                            targetTbody.innerHTML = rowsHtml;
+                        } else {
+                        
+                            itemsTable.innerHTML = html;
+                        }
+                    } catch (e) {
+                        console.error('Error parsing table HTML', e);
+                        itemsTable.innerHTML = html;
+                    }
+                })
+                .catch(err => {
+                    console.error('Error fetching table', err);
                 });
         });
+    });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const itemsContainer = document.querySelector('.scrollable');
+    const viewModal = document.getElementById('viewItemModal');
+    const closeBtns = [document.getElementById('closeViewItem'), document.getElementById('closeViewItem2')];
+
+    function openItemModalFromRow(tr) {
+        if (!tr) return;
+        const d = tr.dataset;
+        document.getElementById('vi_barcode').textContent = d.barcode || '';
+        document.getElementById('vi_name').textContent = d.name || '';
+        document.getElementById('vi_category').textContent = d.category || '';
+        document.getElementById('vi_quantity').textContent = d.quantity || '';
+        document.getElementById('vi_wholesale').textContent = d.wholesale ? `₱${parseFloat(d.wholesale).toFixed(2)}` : '₱0.00';
+        document.getElementById('vi_retail').textContent = d.retail ? `₱${parseFloat(d.retail).toFixed(2)}` : '₱0.00';
+        document.getElementById('vi_expiration').textContent = d.expiration || d['expirationDate'] || '—';
+        document.getElementById('vi_date_added').textContent = d.dateAdded || d['dateAdded'] || '';
+        document.getElementById('vi_last_stock_in').textContent = d.lastStockIn || d['lastStockIn'] || '';
+        viewModal.classList.remove('hidden');
+    }
+
+    function closeViewModal() {
+        viewModal.classList.add('hidden');
+    }
+
+    // Delegated click handler for rows — attach to container so it survives tbody replacements
+    itemsContainer && itemsContainer.addEventListener('click', (e) => {
+        const tr = e.target.closest('#itemsTable tr');
+        if (!tr) return;
+
+        // ignore clicks on action buttons (threshold, stock out button)
+        const btn = e.target.closest('button');
+        if (btn) {
+            const on = (btn.getAttribute && btn.getAttribute('onclick')) || '';
+            if (on.includes('editThreshold') || on.includes('openStockOutForExpired')) return;
+        }
+
+        openItemModalFromRow(tr);
+    });
+
+    // Close handlers
+    closeBtns.forEach(b => b && b.addEventListener('click', closeViewModal));
+
+    viewModal.addEventListener('click', (e) => {
+        if (e.target === viewModal) closeViewModal();
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeViewModal();
     });
 });
 </script>

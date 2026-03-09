@@ -20,7 +20,7 @@ $totalStockInToday = $conn->query("SELECT SUM(quantity) AS total FROM stock_tran
 
 
 
-// FIX: NEW Stock Out Today Calculation (Total items removed today from all sources)
+
 $stockOutQuery = "
     SELECT COALESCE(SUM(quantity), 0) AS total_out
     FROM (
@@ -45,8 +45,7 @@ $totalStockOutToday = $conn->query($stockOutQuery)->fetch_assoc()['total_out'] ?
 $totalSales = $conn->query("SELECT SUM(total_amount) AS total FROM sales WHERE DATE(sale_date) = CURDATE()")->fetch_assoc()['total'] ?? 0;
 $totalSalesCount = $conn->query("SELECT COUNT(*) AS count FROM sales WHERE DATE(sale_date) = CURDATE()")->fetch_assoc()['count'] ?? 0;
 
-// Low stock items -> fetch into array so we can reuse for dropdown + alerts
-// Low stock items -> fetch into array so we can reuse for dropdown + alerts
+
 $lowStockRes = $conn->query("
     SELECT i.*, c.name AS category_name 
     FROM items i 
@@ -75,8 +74,7 @@ $todayTopProducts = $conn->query("
     LIMIT 5
 ");
 
-// Recent Individual Sales Transactions (Today)
-// Important: sales.name might be '0' for some rows. Fallback to items or custom_barcodes by barcode.
+
 $recentSales = $conn->query("
     SELECT s.transaction_id, s.barcode,
            COALESCE(NULLIF(s.name,'0'), i.name, cb.name) AS product_name,
@@ -89,7 +87,7 @@ $recentSales = $conn->query("
     LIMIT 5
 ");
 
-// Unsold products in the last 2 days
+
 $unsold = $conn->query("
     SELECT i.name, i.quantity
     FROM items i
@@ -103,7 +101,7 @@ $unsold = $conn->query("
 ");
 
 
-// Latest added product
+
 $latestProduct = $conn->query("
     SELECT name, retail_price, quantity, barcode
     FROM items
@@ -111,16 +109,16 @@ $latestProduct = $conn->query("
     LIMIT 1
 ");
 
-// Helper function for time formatting
+
 function formatTime($datetime) {
     return date('h:i A', strtotime($datetime));
 }
 
-// Add this query near your other dashboard queries
-$expiringSoonDays = 30; // Configure how many days ahead to check
+
+$expiringSoonDays = 30;
 $today = new DateTime();
 
-// Query for expiring and expired items
+
 $expiringItemsQuery = "
     SELECT i.*, c.name AS category_name,
     DATEDIFF(i.expiration_date, CURDATE()) as days_until_expiry
@@ -149,7 +147,7 @@ $expiringCount = count($expiringItems);
     <script src="https://cdn.tailwindcss.com"></script>
 <script src="scripts/dashboard.js"></script>
     <script>
-        // Tailwind config for custom colors if needed
+ 
         tailwind.config = {
             theme: {
                 extend: {
@@ -224,13 +222,13 @@ $expiringCount = count($expiringItems);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
-/* Add specific z-index classes */
+
 .notification-hover {
-    z-index: 1000; /* Highest z-index for notifications */
+    z-index: 1000; 
 }
 
 .stats-hover {
-    z-index: 100; /* Lower z-index for stat cards */
+    z-index: 100; 
 }
 
 .stats-card {
@@ -241,13 +239,13 @@ $expiringCount = count($expiringItems);
     display: block;
 }
 
-/* Style for notification container */
+
 .header-notif-container {
     position: relative;
-    z-index: 1000; /* Keep notification container above everything */
+    z-index: 1000;
 }
 
-/* Remove any existing notification panel styles that might conflict */
+
 #notifPanel {
     display: none;
 }
@@ -258,22 +256,24 @@ $expiringCount = count($expiringItems);
     <?php include 'sidebar.php'; ?>
 
     <main class="transition-all duration-300 lg:ml-[256px] p-6 lg:p-10">
-        <header class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 header-bg">
-            <div>
-                <h1 class="text-3xl font-extrabold text-slate-900">Dashboard</h1>
-                <p class="mt-1 text-sm text-slate-500">Welcome back, <span class="font-medium text-slate-700"><?= htmlspecialchars($_SESSION['username']) ?></span></p>
-            </div>
+      <header class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 header-bg">
+    <div>
+        <h1 class="text-3xl font-extrabold text-slate-900">Dashboard</h1>
+        <p class="mt-1 text-sm text-slate-500">
+            Welcome back, 
+            <span class="font-medium text-slate-700">
+                <?= htmlspecialchars($_SESSION['username']) ?>
+            </span>
+        </p>
+    </div>
 
-           
-    
-                </div>
-
-                <a href="sales_report.php" class="inline-flex items-center gap-2 px-4 py-2 bg-brand-500 text-white text-sm font-medium rounded-lg shadow-card hover:shadow-card-strong transition">
-                    Reports
-                </a>
-             
-            </div>
-        </header>
+    <div class="flex items-center gap-3">
+        <a href="sales_report.php"
+           class="inline-flex items-center gap-2 px-4 py-2 bg-brand-500 text-white text-sm font-medium rounded-lg shadow-card hover:shadow-card-strong transition">
+            Reports
+        </a>
+    </div>
+</header>
 
        <section class="mb-6">
     <div class="stats-card inline-block">
@@ -317,6 +317,7 @@ $expiringCount = count($expiringItems);
                                     <span class="text-sm text-slate-800"><?= htmlspecialchars($item['name']) ?></span>
                                     <span class="text-xs font-medium text-rose-600">
                                         <?= $item['quantity'] ?> left (min: <?= $item['low_stock_threshold'] ?>)
+                                         </span>
                                 </div>
                             <?php endforeach; ?>
                         </div>
@@ -352,7 +353,7 @@ $expiringCount = count($expiringItems);
         </div>
     </div>
 </section>
-
+<h2 class="text-lg font-semibold text-slate-800 mb-4">Overview</h2>
 <!-- Then your existing stats grid section starts here -->
 <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
     <div class="bg-white rounded-2xl p-5 shadow-card border border-slate-100">
